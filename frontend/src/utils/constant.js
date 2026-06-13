@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = "https://jobsync-6tv7.onrender.com";
 
 export const USER_API_END_POINT = `${BASE_URL}/api/v1/user`;
 export const JOB_API_END_POINT = `${BASE_URL}/api/v1/job`;
