@@ -1,4 +1,4 @@
-# JobSync
+# 🚀 JobSync
 
 **JobSync** is an AI-powered recruitment and career intelligence platform built using the MERN stack. It helps job seekers find suitable jobs, apply to opportunities, generate AI-based job match reports, identify skill gaps, prepare for interviews, and download ATS-optimized resumes tailored to specific job descriptions.
 
@@ -6,17 +6,17 @@ The platform also provides recruiter-side workflows for posting jobs, managing c
 
 ---
 
-## Live Demo
+## 🌐 Live Demo
 
 * **Frontend:** [Live](https://jobsync-frontend2.onrender.com)
-* **Backend:**[Live](https://jobsync-6tv7.onrender.com)
+* **Backend:** [Live](https://jobsync-6tv7.onrender.com)
 * **GitHub Repository:** [Github Repo](https://github.com/PULAK04/JobSync)
 
 ---
 
-## Features
+## ✨ Features
 
-### Job Seeker Features
+### 👨‍💻 Job Seeker Features
 
 * User registration and login
 * Secure JWT-based authentication
@@ -30,7 +30,7 @@ The platform also provides recruiter-side workflows for posting jobs, managing c
 * Download AI-generated ATS-optimized resume PDF
 * View previously generated Match Reports
 
-### Recruiter Features
+### 🧑‍💼 Recruiter Features
 
 * Recruiter registration and login
 * Company creation and management
@@ -39,7 +39,7 @@ The platform also provides recruiter-side workflows for posting jobs, managing c
 * View applicants for each job
 * Accept or reject job applications
 
-### AI-Powered Features
+### 🤖 AI-Powered Features
 
 * AI-based job match score generation
 * Resume and job description comparison
@@ -50,7 +50,7 @@ The platform also provides recruiter-side workflows for posting jobs, managing c
 * ATS-optimized resume generation using Gemini AI
 * PDF resume download using PDFKit
 
-### Redis Caching Features
+### ⚡ Redis Caching Features
 
 * Redis Cloud integration for caching AI-generated match reports
 * Cached interview report history for faster response
@@ -59,9 +59,9 @@ The platform also provides recruiter-side workflows for posting jobs, managing c
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-### Frontend
+### 🎨 Frontend
 
 * React.js
 * Redux Toolkit
@@ -72,7 +72,7 @@ The platform also provides recruiter-side workflows for posting jobs, managing c
 * React Icons
 * Vite
 
-### Backend
+### 🧩 Backend
 
 * Node.js
 * Express.js
@@ -87,7 +87,7 @@ The platform also provides recruiter-side workflows for posting jobs, managing c
 * ioredis
 * Gemini AI API
 
-### Database and Cloud Services
+### ☁️ Database and Cloud Services
 
 * MongoDB Atlas
 * Redis Cloud
@@ -97,7 +97,7 @@ The platform also provides recruiter-side workflows for posting jobs, managing c
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```txt
 JobSync/
@@ -162,9 +162,9 @@ JobSync/
 
 ---
 
-## Backend API Routes
+## 🔗 Backend API Routes
 
-### User Routes
+### 👤 User Routes
 
 ```txt
 POST   /api/v1/user/register
@@ -173,7 +173,7 @@ GET    /api/v1/user/logout
 POST   /api/v1/user/profile/update
 ```
 
-### Job Routes
+### 💼 Job Routes
 
 ```txt
 POST   /api/v1/job/post
@@ -182,7 +182,7 @@ GET    /api/v1/job/getadminjobs
 GET    /api/v1/job/get/:id
 ```
 
-### Company Routes
+### 🏢 Company Routes
 
 ```txt
 POST   /api/v1/company/register
@@ -191,7 +191,7 @@ GET    /api/v1/company/get/:id
 PUT    /api/v1/company/update/:id
 ```
 
-### Application Routes
+### 📝 Application Routes
 
 ```txt
 GET    /api/v1/application/apply/:id
@@ -200,7 +200,7 @@ GET    /api/v1/application/:id/applicants
 POST   /api/v1/application/status/:id/update
 ```
 
-### AI Match Report Routes
+### 🧠 AI Match Report Routes
 
 ```txt
 POST   /api/v1/interview
@@ -211,7 +211,7 @@ POST   /api/v1/interview/resume/pdf/:interviewReportId
 
 ---
 
-## AI Match Report Flow
+## 🧠 AI Match Report Flow
 
 ```txt
 User selects a job
@@ -233,7 +233,7 @@ User is redirected to Match Report page
 
 ---
 
-## Redis Usage
+## ⚡ Redis Usage
 
 Redis Cloud is used to improve performance and reduce repeated expensive operations.
 
@@ -255,7 +255,7 @@ resume-pdf:userId:interviewReportId
 
 ---
 
-## Installation and Setup
+## ⚙️ Installation and Setup
 
 ### 1. Clone the Repository
 
@@ -266,7 +266,7 @@ cd JobSync
 
 ---
 
-## Backend Setup
+## 🧩 Backend Setup
 
 ### 1. Go to backend folder
 
@@ -311,7 +311,7 @@ http://localhost:8000
 
 ---
 
-## Frontend Setup
+## 🎨 Frontend Setup
 
 ### 1. Go to frontend folder
 
@@ -345,7 +345,7 @@ http://localhost:5173
 
 ---
 
-## Environment Variables
+## 🔐 Environment Variables
 
 ### Backend Environment Variables
 
@@ -369,7 +369,7 @@ http://localhost:5173
 
 ---
 
-## Important Git Ignore Rules
+## 🚫 Important Git Ignore Rules
 
 Make sure these files and folders are not pushed to GitHub:
 
@@ -391,31 +391,31 @@ dist/
 
 ---
 
-## Key Functional Highlights
+## 🌟 Key Functional Highlights
 
-### AI Job Matching
+### 🎯 AI Job Matching
 
 The platform uses Gemini AI to compare the candidate's resume and self-description with a job description. It generates a match score and identifies how well the candidate fits the role.
 
-### Skill Gap Analysis
+### 📊 Skill Gap Analysis
 
 The AI identifies missing or weak skills based on the target job description and suggests areas for improvement.
 
-### Interview Preparation
+### 🧑‍🏫 Interview Preparation
 
 The system generates technical questions, behavioral questions, and a personalized preparation roadmap for the candidate.
 
-### ATS Resume Generation
+### 📄 ATS Resume Generation
 
 The system uses Gemini AI to generate ATS-optimized resume content based on the candidate's resume and the selected job description. PDFKit is used to convert the AI-generated content into a downloadable PDF.
 
-### Redis Caching
+### ⚡ Redis Caching
 
 Redis Cloud is used to cache AI reports and report history. This improves performance and reduces unnecessary AI API calls.
 
 ---
 
-## Deployment
+## 🚀 Deployment
 
 ### Frontend Deployment
 
@@ -443,7 +443,7 @@ Backend can be deployed on:
 
 ---
 
-## Future Improvements
+## 🔮 Future Improvements
 
 * Add email notifications for job applications
 * Add recruiter analytics dashboard
@@ -456,7 +456,7 @@ Backend can be deployed on:
 
 ---
 
-## Author
+## 👨‍💻 Author
 
 **Pulak**
 
@@ -466,6 +466,6 @@ Backend can be deployed on:
 
 ---
 
-## License
+## 📄 License
 
 This project is for educational and portfolio purposes.
