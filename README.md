@@ -1,4 +1,4 @@
-# JobSync
+# JobSync — AI-Powered Recruitment & Career Intelligence Platform
 
 **JobSync** is an AI-powered recruitment and career intelligence platform built using the MERN stack. It helps job seekers find suitable jobs, apply to opportunities, generate AI-based job match reports, identify skill gaps, prepare for interviews, and download ATS-optimized resumes tailored to specific job descriptions.
 
