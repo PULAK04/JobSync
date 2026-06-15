@@ -255,142 +255,6 @@ resume-pdf:userId:interviewReportId
 
 ---
 
-## Installation and Setup
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/PULAK04/JobSync.git
-cd JobSync
-```
-
----
-
-## Backend Setup
-
-### 1. Go to backend folder
-
-```bash
-cd backend
-```
-
-### 2. Install dependencies
-
-```bash
-npm install
-```
-
-### 3. Create `.env` file
-
-```env
-PORT=8000
-MONGO_URI=your_mongodb_connection_string
-SECRET_KEY=your_jwt_secret_key
-
-CLOUD_NAME=your_cloudinary_cloud_name
-API_KEY=your_cloudinary_api_key
-API_SECRET=your_cloudinary_api_secret
-
-GOOGLE_GENAI_API_KEY=your_gemini_api_key
-REDIS_URL=your_redis_cloud_connection_url
-
-FRONTEND_URL=http://localhost:5173
-```
-
-### 4. Start backend server
-
-```bash
-npm run dev
-```
-
-Backend will run on:
-
-```txt
-http://localhost:8000
-```
-
----
-
-## Frontend Setup
-
-### 1. Go to frontend folder
-
-```bash
-cd frontend
-```
-
-### 2. Install dependencies
-
-```bash
-npm install
-```
-
-### 3. Create `.env` file
-
-```env
-VITE_BACKEND_URL=http://localhost:8000
-```
-
-### 4. Start frontend
-
-```bash
-npm run dev
-```
-
-Frontend will run on:
-
-```txt
-http://localhost:5173
-```
-
----
-
-## Environment Variables
-
-### Backend Environment Variables
-
-| Variable               | Description                     |
-| ---------------------- | ------------------------------- |
-| `PORT`                 | Backend server port             |
-| `MONGO_URI`            | MongoDB Atlas connection string |
-| `SECRET_KEY`           | JWT secret key                  |
-| `CLOUD_NAME`           | Cloudinary cloud name           |
-| `API_KEY`              | Cloudinary API key              |
-| `API_SECRET`           | Cloudinary API secret           |
-| `GOOGLE_GENAI_API_KEY` | Gemini AI API key               |
-| `REDIS_URL`            | Redis Cloud connection URL      |
-| `FRONTEND_URL`         | Frontend URL for CORS           |
-
-### Frontend Environment Variables
-
-| Variable           | Description          |
-| ------------------ | -------------------- |
-| `VITE_BACKEND_URL` | Backend API base URL |
-
----
-
-## Important Git Ignore Rules
-
-Make sure these files and folders are not pushed to GitHub:
-
-```gitignore
-node_modules/
-backend/node_modules/
-frontend/node_modules/
-
-.env
-backend/.env
-frontend/.env
-
-backend/.cache/
-.cache/
-
-frontend/dist/
-dist/
-```
-
----
-
 ## Key Functional Highlights
 
 ### AI Job Matching
@@ -419,20 +283,18 @@ Redis Cloud is used to cache AI reports and report history. This improves perfor
 
 ### Frontend Deployment
 
-Frontend can be deployed on:
+Frontend is deployed on:
 
-* Vercel
 * Render Static Site
-* Netlify
+
 
 ### Backend Deployment
 
-Backend can be deployed on:
+Backend is deployed on:
 
 * Render
-* Railway
-* Cyclic
-* Any Node.js hosting platform
+
+
 
 ### Database and Services
 
