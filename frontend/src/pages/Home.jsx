@@ -28,7 +28,7 @@ export default function Home() {
                 <div className="grid gap-4 md:grid-cols-3">
                     {[
                         [Search, "Job discovery", "Search and apply for suitable roles from recruiter-posted opportunities."],
-                        [BrainCircuit, "AI Match", "Use Groq-powered analysis for match scores, skill gaps and interview preparation."],
+                        [BrainCircuit, "AI Match", "Use AI-powered analysis for match scores, skill gaps and interview preparation."],
                         [FileText, "ATS resume", "Generate a role-tailored resume PDF while preserving your real experience."]
                     ].map(([Icon, title, text]) => (
                         <div key={title} className="rounded-2xl border border-slate-800 bg-panel p-6"><Icon className="text-purple-400" /><h2 className="mt-4 text-lg font-bold text-white">{title}</h2><p className="mt-2 text-sm leading-6 text-slate-400">{text}</p></div>
@@ -43,7 +43,7 @@ export default function Home() {
 
             <section className="mx-auto mb-16 max-w-7xl px-4 sm:px-6">
                 <div className="grid gap-6 rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 to-purple-950/50 p-8 md:grid-cols-3">
-                    {[[Zap, "Credit-controlled AI usage"], [ShieldCheck, "Secure role and ownership checks"], [BrainCircuit, "Groq structured AI output"]].map(([Icon, text]) => <div key={text} className="flex items-center gap-3 text-slate-200"><Icon className="text-emerald-400" /><span>{text}</span></div>)}
+                    {[[Zap, "Credit-controlled AI usage"], [ShieldCheck, "Secure role and ownership checks"], [BrainCircuit, "Structured AI output"]].map(([Icon, text]) => <div key={text} className="flex items-center gap-3 text-slate-200"><Icon className="text-emerald-400" /><span>{text}</span></div>)}
                 </div>
             </section>
         </>

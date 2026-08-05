@@ -54,7 +54,7 @@ export default function AIReport() {
     return (
         <section className="mx-auto min-h-[75vh] max-w-6xl px-4 py-12 sm:px-6">
             <div className="flex flex-col gap-5 rounded-3xl border border-slate-800 bg-gradient-to-br from-panel to-purple-950/30 p-7 sm:flex-row sm:items-center sm:justify-between">
-                <div><p className="text-sm uppercase tracking-widest text-purple-400">AI Match Report</p><h1 className="mt-2 text-3xl font-bold text-white">{report.title || report.jobTitle}</h1><p className="mt-2 text-sm text-slate-400">Generated with {report.model || "Groq AI"}</p></div>
+                <div><p className="text-sm uppercase tracking-widest text-purple-400">AI Match Report</p><h1 className="mt-2 text-3xl font-bold text-white">{report.title || report.jobTitle}</h1></div>
                 <div className="flex items-center gap-4"><div className="rounded-2xl bg-emerald-500/10 px-5 py-4 text-center"><Gauge className="mx-auto text-emerald-400" /><p className="mt-1 text-3xl font-black text-emerald-300">{report.matchScore}%</p><p className="text-xs text-slate-400">Match score</p></div><button onClick={downloadResume} disabled={downloading} className="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-5 py-3 font-semibold hover:bg-purple-500 disabled:opacity-50"><Download size={18} /> {downloading ? "Generating..." : "ATS Resume"}</button></div>
             </div>
 
