@@ -2,15 +2,19 @@ name: JobSync CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   validate:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Node.js
@@ -19,25 +23,38 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: |
-            backend/package.json
-            frontend/package.json
+            backend/package-lock.json
+            frontend/package-lock.json
 
       - name: Install backend dependencies
-        run: npm install --prefix backend
+        working-directory: backend
+        run: npm ci
 
       - name: Check backend syntax
-        run: find backend -name '*.js' -type f -print0 | xargs -0 -n1 node --check
+        working-directory: backend
+        run: |
+          find . \
+            -path "./node_modules" -prune -o \
+            -name "*.js" \
+            -type f \
+            -print0 | xargs -0 -n1 node --check
 
       - name: Install frontend dependencies
-        run: npm install --prefix frontend
+        working-directory: frontend
+        run: npm ci
 
       - name: Build frontend
-        run: npm run build --prefix frontend
+        working-directory: frontend
+        run: npm run build
         env:
           VITE_BACKEND_URL: http://localhost:8000
 
-      - name: Build backend image
+      - name: Build backend Docker image
         run: docker build -t jobsync-backend-ci ./backend
 
-      - name: Build frontend image
-        run: docker build --build-arg VITE_BACKEND_URL=http://localhost:8000 -t jobsync-frontend-ci ./frontend
+      - name: Build frontend Docker image
+        run: |
+          docker build \
+            --build-arg VITE_BACKEND_URL=http://localhost:8000 \
+            -t jobsync-frontend-ci \
+            ./frontend
