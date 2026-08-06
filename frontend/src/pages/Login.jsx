@@ -1,8 +1,18 @@
-import { KeyRound, LockKeyhole, Mail } from "lucide-react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+    Link,
+    useLocation,
+    useNavigate
+} from "react-router-dom";
+import {
+    KeyRound,
+    LockKeyhole,
+    Mail
+} from "lucide-react";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "sonner";
+
 import api from "../utils/api.js";
 import { endpoints } from "../utils/endpoints.js";
 import { setUser } from "../redux/slices/authSlice.js";
@@ -10,18 +20,32 @@ import { setUser } from "../redux/slices/authSlice.js";
 export default function Login() {
     const [mode, setMode] = useState("password");
     const [otpStep, setOtpStep] = useState("request");
-    const [form, setForm] = useState({ email: "", password: "", otp: "" });
+
+    const [form, setForm] = useState({
+        email: "",
+        password: "",
+        otp: ""
+    });
+
     const [loginToken, setLoginToken] = useState("");
     const [maskedEmail, setMaskedEmail] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
 
     const finishLogin = (data) => {
         dispatch(setUser(data.user));
-        toast.success(data.message || "Login successful");
-        navigate(location.state?.from || "/", { replace: true });
+
+        toast.success(
+            data.message || "Login successful"
+        );
+
+        navigate(location.state?.from || "/", {
+            replace: true
+        });
     };
 
     const submitPasswordLogin = async (event) => {
@@ -29,13 +53,20 @@ export default function Login() {
         setLoading(true);
 
         try {
-            const { data } = await api.post(`${endpoints.user}/login`, {
-                email: form.email,
-                password: form.password
-            });
+            const { data } = await api.post(
+                `${endpoints.user}/login`,
+                {
+                    email: form.email.trim(),
+                    password: form.password
+                }
+            );
+
             finishLogin(data);
         } catch (error) {
-            toast.error(error.response?.data?.message || "Unable to log in");
+            toast.error(
+                error.response?.data?.message ||
+                    "Unable to log in"
+            );
         } finally {
             setLoading(false);
         }
@@ -46,16 +77,31 @@ export default function Login() {
         setLoading(true);
 
         try {
-            const { data } = await api.post(`${endpoints.user}/login/request-otp`, {
-                email: form.email
-            });
+            const { data } = await api.post(
+                `${endpoints.user}/login/request-otp`,
+                {
+                    email: form.email.trim()
+                }
+            );
+
             setLoginToken(data.loginToken);
             setMaskedEmail(data.maskedEmail);
             setOtpStep("verify");
-            toast.success(data.message);
-            if (data.developmentOtp) toast.info(`Development OTP: ${data.developmentOtp}`);
+
+            toast.success(
+                data.message || "OTP sent successfully"
+            );
+
+            if (data.developmentOtp) {
+                toast.info(
+                    `Development OTP: ${data.developmentOtp}`
+                );
+            }
         } catch (error) {
-            toast.error(error.response?.data?.message || "Unable to send OTP");
+            toast.error(
+                error.response?.data?.message ||
+                    "Unable to send OTP"
+            );
         } finally {
             setLoading(false);
         }
@@ -66,27 +112,61 @@ export default function Login() {
         setLoading(true);
 
         try {
-            const { data } = await api.post(`${endpoints.user}/login/verify-otp`, {
-                loginToken,
-                otp: form.otp
-            });
+            const { data } = await api.post(
+                `${endpoints.user}/login/verify-otp`,
+                {
+                    loginToken,
+                    otp: form.otp
+                }
+            );
+
             finishLogin(data);
         } catch (error) {
-            toast.error(error.response?.data?.message || "OTP verification failed");
+            toast.error(
+                error.response?.data?.message ||
+                    "OTP verification failed"
+            );
         } finally {
             setLoading(false);
         }
     };
 
     const resendOtp = async () => {
+        if (!loginToken) {
+            toast.error(
+                "Please request a new OTP first"
+            );
+            return;
+        }
+
         setLoading(true);
 
         try {
-            const { data } = await api.post(`${endpoints.user}/login/resend-otp`, { loginToken });
-            toast.success(data.message);
-            if (data.developmentOtp) toast.info(`Development OTP: ${data.developmentOtp}`);
+            const { data } = await api.post(
+                `${endpoints.user}/login/resend-otp`,
+                {
+                    loginToken
+                }
+            );
+
+            if (data.loginToken) {
+                setLoginToken(data.loginToken);
+            }
+
+            toast.success(
+                data.message || "OTP sent again"
+            );
+
+            if (data.developmentOtp) {
+                toast.info(
+                    `Development OTP: ${data.developmentOtp}`
+                );
+            }
         } catch (error) {
-            toast.error(error.response?.data?.message || "Unable to resend OTP");
+            toast.error(
+                error.response?.data?.message ||
+                    "Unable to resend OTP"
+            );
         } finally {
             setLoading(false);
         }
@@ -97,85 +177,329 @@ export default function Login() {
         setOtpStep("request");
         setLoginToken("");
         setMaskedEmail("");
-        setForm((current) => ({ ...current, otp: "" }));
+        setShowPassword(false);
+
+        setForm((currentForm) => ({
+            ...currentForm,
+            password: "",
+            otp: ""
+        }));
     };
 
     return (
         <section className="mx-auto flex min-h-[75vh] max-w-7xl items-center justify-center px-4 py-12">
             <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-panel p-7 shadow-2xl shadow-black/30">
-                <h1 className="text-2xl font-bold text-white">Welcome back</h1>
-                <p className="mt-2 text-sm text-slate-400">Choose password login or passwordless OTP login.</p>
+                <h1 className="text-2xl font-bold text-white">
+                    Welcome back
+                </h1>
+
+                <p className="mt-2 text-sm text-slate-400">
+                    Choose password login or passwordless
+                    OTP login.
+                </p>
 
                 <div className="mt-6 grid grid-cols-2 rounded-xl border border-slate-700 bg-slate-950/50 p-1">
                     <button
                         type="button"
-                        onClick={() => switchMode("password")}
-                        className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition ${mode === "password" ? "bg-purple-600 text-white" : "text-slate-400 hover:text-white"}`}
+                        onClick={() =>
+                            switchMode("password")
+                        }
+                        className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                            mode === "password"
+                                ? "bg-purple-600 text-white"
+                                : "text-slate-400 hover:text-white"
+                        }`}
                     >
-                        <LockKeyhole size={16} /> Password
+                        <LockKeyhole size={16} />
+                        Password
                     </button>
+
                     <button
                         type="button"
                         onClick={() => switchMode("otp")}
-                        className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition ${mode === "otp" ? "bg-purple-600 text-white" : "text-slate-400 hover:text-white"}`}
+                        className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                            mode === "otp"
+                                ? "bg-purple-600 text-white"
+                                : "text-slate-400 hover:text-white"
+                        }`}
                     >
-                        <KeyRound size={16} /> Login with OTP
+                        <KeyRound size={16} />
+                        Login with OTP
                     </button>
                 </div>
 
                 {mode === "password" && (
-                    <form onSubmit={submitPasswordLogin} className="mt-7 space-y-4">
+                    <form
+                        onSubmit={submitPasswordLogin}
+                        className="mt-7 space-y-4"
+                    >
                         <label className="block text-sm text-slate-300">
                             Email
+
                             <div className="relative mt-2">
-                                <Mail className="absolute left-3 top-3.5 text-slate-500" size={18} />
-                                <input required type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} className="w-full rounded-xl border border-slate-700 bg-slate-950/60 py-3 pl-10 pr-4 outline-none focus:border-purple-500" />
+                                <Mail
+                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+                                    size={18}
+                                />
+
+                                <input
+                                    required
+                                    type="email"
+                                    value={form.email}
+                                    onChange={(event) =>
+                                        setForm({
+                                            ...form,
+                                            email:
+                                                event.target
+                                                    .value
+                                        })
+                                    }
+                                    placeholder="Enter your email"
+                                    autoComplete="email"
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-950/60 py-3 pl-10 pr-4 outline-none transition focus:border-purple-500"
+                                />
                             </div>
                         </label>
-                        <label className="block text-sm text-slate-300">
-                            Password
-                            <input required type="password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3 outline-none focus:border-purple-500" />
-                        </label>
-                        <button disabled={loading} className="w-full rounded-xl bg-purple-600 py-3 font-semibold text-white hover:bg-purple-500 disabled:opacity-50">
-                            {loading ? "Logging in..." : "Login with password"}
-                        </button>
-                        <button type="button" onClick={() => switchMode("otp")} className="w-full text-sm text-purple-400 hover:text-purple-300">
-                            Forgot your password or prefer OTP? Login with OTP
-                        </button>
-                    </form>
-                )}
 
-                {mode === "otp" && otpStep === "request" && (
-                    <form onSubmit={requestOtp} className="mt-7 space-y-4">
-                        <p className="text-sm leading-6 text-slate-400">Enter your registered email. You do not need your password for this login method.</p>
-                        <label className="block text-sm text-slate-300">
-                            Email
-                            <input required type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3 outline-none focus:border-purple-500" />
-                        </label>
-                        <button disabled={loading} className="w-full rounded-xl bg-purple-600 py-3 font-semibold text-white hover:bg-purple-500 disabled:opacity-50">
-                            {loading ? "Sending OTP..." : "Send login OTP"}
-                        </button>
-                    </form>
-                )}
+                        <div className="block text-sm text-slate-300">
+                            <label htmlFor="login-password">
+                                Password
+                            </label>
 
-                {mode === "otp" && otpStep === "verify" && (
-                    <form onSubmit={verifyOtp} className="mt-7 space-y-4">
-                        <p className="text-sm text-slate-400">Enter the OTP sent to <span className="font-semibold text-slate-200">{maskedEmail}</span>.</p>
-                        <label className="block text-sm text-slate-300">
-                            6-digit OTP
-                            <input required inputMode="numeric" maxLength={6} value={form.otp} onChange={(event) => setForm({ ...form, otp: event.target.value.replace(/\D/g, "") })} className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3 text-center text-2xl tracking-[0.5em] outline-none focus:border-purple-500" />
-                        </label>
-                        <button disabled={loading || form.otp.length !== 6} className="w-full rounded-xl bg-purple-600 py-3 font-semibold text-white hover:bg-purple-500 disabled:opacity-50">
-                            {loading ? "Verifying..." : "Verify and login"}
-                        </button>
-                        <div className="flex justify-between text-sm">
-                            <button type="button" onClick={() => setOtpStep("request")} className="text-slate-400 hover:text-white">Change email</button>
-                            <button type="button" disabled={loading} onClick={resendOtp} className="text-purple-400 hover:text-purple-300 disabled:opacity-50">Resend OTP</button>
+                            <div className="relative mt-2">
+                                <LockKeyhole
+                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+                                    size={18}
+                                />
+
+                                <input
+                                    id="login-password"
+                                    required
+                                    type={
+                                        showPassword
+                                            ? "text"
+                                            : "password"
+                                    }
+                                    value={form.password}
+                                    onChange={(event) =>
+                                        setForm({
+                                            ...form,
+                                            password:
+                                                event.target
+                                                    .value
+                                        })
+                                    }
+                                    placeholder="Enter your password"
+                                    autoComplete="current-password"
+                                    className="w-full rounded-xl border border-slate-700 bg-slate-950/60 py-3 pl-10 pr-12 outline-none transition focus:border-purple-500"
+                                />
+
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setShowPassword(
+                                            (currentValue) =>
+                                                !currentValue
+                                        )
+                                    }
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-500 transition hover:bg-slate-800 hover:text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    aria-label={
+                                        showPassword
+                                            ? "Hide password"
+                                            : "Show password"
+                                    }
+                                    title={
+                                        showPassword
+                                            ? "Hide password"
+                                            : "Show password"
+                                    }
+                                >
+                                    {showPassword ? (
+                                        <FiEyeOff
+                                            size={19}
+                                        />
+                                    ) : (
+                                        <FiEye size={19} />
+                                    )}
+                                </button>
+                            </div>
                         </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full rounded-xl bg-purple-600 py-3 font-semibold text-white transition hover:bg-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            {loading
+                                ? "Logging in..."
+                                : "Login with password"}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() =>
+                                switchMode("otp")
+                            }
+                            className="w-full text-sm text-purple-400 transition hover:text-purple-300"
+                        >
+                            Forgot your password or prefer
+                            OTP? Login with OTP
+                        </button>
                     </form>
                 )}
 
-                <p className="mt-6 text-center text-sm text-slate-400">New to JobSync? <Link className="text-purple-400" to="/signup">Create an account</Link></p>
+                {mode === "otp" &&
+                    otpStep === "request" && (
+                        <form
+                            onSubmit={requestOtp}
+                            className="mt-7 space-y-4"
+                        >
+                            <p className="text-sm leading-6 text-slate-400">
+                                Enter your registered email.
+                                You do not need your password
+                                for this login method.
+                            </p>
+
+                            <label className="block text-sm text-slate-300">
+                                Email
+
+                                <div className="relative mt-2">
+                                    <Mail
+                                        className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+                                        size={18}
+                                    />
+
+                                    <input
+                                        required
+                                        type="email"
+                                        value={form.email}
+                                        onChange={(event) =>
+                                            setForm({
+                                                ...form,
+                                                email:
+                                                    event
+                                                        .target
+                                                        .value
+                                            })
+                                        }
+                                        placeholder="Enter your registered email"
+                                        autoComplete="email"
+                                        className="w-full rounded-xl border border-slate-700 bg-slate-950/60 py-3 pl-10 pr-4 outline-none transition focus:border-purple-500"
+                                    />
+                                </div>
+                            </label>
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full rounded-xl bg-purple-600 py-3 font-semibold text-white transition hover:bg-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                {loading
+                                    ? "Sending OTP..."
+                                    : "Send login OTP"}
+                            </button>
+                        </form>
+                    )}
+
+                {mode === "otp" &&
+                    otpStep === "verify" && (
+                        <form
+                            onSubmit={verifyOtp}
+                            className="mt-7 space-y-4"
+                        >
+                            <p className="text-sm leading-6 text-slate-400">
+                                Enter the OTP sent to{" "}
+                                <span className="font-semibold text-slate-200">
+                                    {maskedEmail}
+                                </span>
+                                .
+                            </p>
+
+                            <label className="block text-sm text-slate-300">
+                                6-digit OTP
+
+                                <input
+                                    required
+                                    inputMode="numeric"
+                                    pattern="[0-9]{6}"
+                                    maxLength={6}
+                                    value={form.otp}
+                                    onChange={(event) =>
+                                        setForm({
+                                            ...form,
+                                            otp: event.target.value
+                                                .replace(
+                                                    /\D/g,
+                                                    ""
+                                                )
+                                                .slice(0, 6)
+                                        })
+                                    }
+                                    placeholder="000000"
+                                    autoComplete="one-time-code"
+                                    className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3 text-center text-2xl tracking-[0.5em] outline-none transition placeholder:tracking-normal focus:border-purple-500"
+                                />
+                            </label>
+
+                            <button
+                                type="submit"
+                                disabled={
+                                    loading ||
+                                    form.otp.length !== 6
+                                }
+                                className="w-full rounded-xl bg-purple-600 py-3 font-semibold text-white transition hover:bg-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                {loading
+                                    ? "Verifying..."
+                                    : "Verify and login"}
+                            </button>
+
+                            <div className="flex items-center justify-between text-sm">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setOtpStep(
+                                            "request"
+                                        );
+
+                                        setLoginToken("");
+                                        setMaskedEmail("");
+
+                                        setForm(
+                                            (
+                                                currentForm
+                                            ) => ({
+                                                ...currentForm,
+                                                otp: ""
+                                            })
+                                        );
+                                    }}
+                                    className="text-slate-400 transition hover:text-white"
+                                >
+                                    Change email
+                                </button>
+
+                                <button
+                                    type="button"
+                                    disabled={loading}
+                                    onClick={resendOtp}
+                                    className="text-purple-400 transition hover:text-purple-300 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    Resend OTP
+                                </button>
+                            </div>
+                        </form>
+                    )}
+
+                <p className="mt-6 text-center text-sm text-slate-400">
+                    New to JobSync?{" "}
+                    <Link
+                        className="font-medium text-purple-400 transition hover:text-purple-300"
+                        to="/signup"
+                    >
+                        Create an account
+                    </Link>
+                </p>
             </div>
         </section>
     );
