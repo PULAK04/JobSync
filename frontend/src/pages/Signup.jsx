@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import { Eye, EyeOff } from "lucide-react";
 
 import api from "../utils/api.js";
 import { endpoints } from "../utils/endpoints.js";
@@ -48,7 +48,7 @@ export default function Signup() {
         } catch (error) {
             toast.error(
                 error.response?.data?.message ||
-                    "Unable to create account"
+                "Unable to create account"
             );
         } finally {
             setLoading(false);
@@ -174,9 +174,9 @@ export default function Signup() {
                                 }
                             >
                                 {showPassword ? (
-                                    <FiEyeOff size={20} />
+                                    <EyeOff size={20} />
                                 ) : (
-                                    <FiEye size={20} />
+                                    <Eye size={20} />
                                 )}
                             </button>
                         </div>

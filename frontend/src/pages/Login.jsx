@@ -6,11 +6,13 @@ import {
     useNavigate
 } from "react-router-dom";
 import {
+    Eye,
+    EyeOff,
     KeyRound,
     LockKeyhole,
     Mail
 } from "lucide-react";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+
 import { toast } from "sonner";
 
 import api from "../utils/api.js";
@@ -65,7 +67,7 @@ export default function Login() {
         } catch (error) {
             toast.error(
                 error.response?.data?.message ||
-                    "Unable to log in"
+                "Unable to log in"
             );
         } finally {
             setLoading(false);
@@ -100,7 +102,7 @@ export default function Login() {
         } catch (error) {
             toast.error(
                 error.response?.data?.message ||
-                    "Unable to send OTP"
+                "Unable to send OTP"
             );
         } finally {
             setLoading(false);
@@ -124,7 +126,7 @@ export default function Login() {
         } catch (error) {
             toast.error(
                 error.response?.data?.message ||
-                    "OTP verification failed"
+                "OTP verification failed"
             );
         } finally {
             setLoading(false);
@@ -165,7 +167,7 @@ export default function Login() {
         } catch (error) {
             toast.error(
                 error.response?.data?.message ||
-                    "Unable to resend OTP"
+                "Unable to resend OTP"
             );
         } finally {
             setLoading(false);
@@ -204,11 +206,10 @@ export default function Login() {
                         onClick={() =>
                             switchMode("password")
                         }
-                        className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition ${
-                            mode === "password"
+                        className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition ${mode === "password"
                                 ? "bg-purple-600 text-white"
                                 : "text-slate-400 hover:text-white"
-                        }`}
+                            }`}
                     >
                         <LockKeyhole size={16} />
                         Password
@@ -217,11 +218,10 @@ export default function Login() {
                     <button
                         type="button"
                         onClick={() => switchMode("otp")}
-                        className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition ${
-                            mode === "otp"
+                        className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition ${mode === "otp"
                                 ? "bg-purple-600 text-white"
                                 : "text-slate-400 hover:text-white"
-                        }`}
+                            }`}
                     >
                         <KeyRound size={16} />
                         Login with OTP
@@ -315,11 +315,9 @@ export default function Login() {
                                     }
                                 >
                                     {showPassword ? (
-                                        <FiEyeOff
-                                            size={19}
-                                        />
+                                        <EyeOff size={19} />
                                     ) : (
-                                        <FiEye size={19} />
+                                        <Eye size={19} />
                                     )}
                                 </button>
                             </div>
