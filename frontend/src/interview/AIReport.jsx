@@ -1,68 +1,552 @@
-import { Download, Gauge, GraduationCap, ListChecks, MessageSquareText, Wrench } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+    Download,
+    Gauge,
+    GraduationCap,
+    ListChecks,
+    MessageSquareText,
+    Wrench,
+    ChevronDown,
+    ChevronUp,
+    ClipboardList,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
+
 import Loading from "../components/shared/Loading.jsx";
 import api from "../utils/api.js";
 import { endpoints } from "../utils/endpoints.js";
 
-function Section({ icon: Icon, title, items }) {
+function QuestionCard({ question, index }) {
+    const [open, setOpen] = useState(false);
+
     return (
-        <div className="rounded-2xl border border-slate-800 bg-panel p-6">
-            <h2 className="flex items-center gap-3 text-lg font-bold text-white"><Icon className="text-purple-400" size={20} /> {title}</h2>
-            <ol className="mt-5 space-y-3">{items?.map((item, index) => <li key={`${title}-${index}`} className="rounded-xl bg-slate-950/50 p-4 text-sm leading-6 text-slate-300"><span className="mr-2 font-bold text-purple-300">{index + 1}.</span>{item}</li>)}</ol>
+        <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 transition-colors hover:border-slate-700">
+            <button
+                type="button"
+                onClick={() => setOpen((current) => !current)}
+                className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left"
+            >
+                <div className="flex min-w-0 items-start gap-4">
+                    <span className="flex h-8 min-w-8 shrink-0 items-center justify-center rounded-lg bg-purple-500/15 text-sm font-bold text-purple-400">
+                        Q{index + 1}
+                    </span>
+
+                    <span className="text-sm font-semibold leading-6 text-slate-200">
+                        {question}
+                    </span>
+                </div>
+
+                <span className="shrink-0 text-slate-500">
+                    {open ? (
+                        <ChevronUp size={20} />
+                    ) : (
+                        <ChevronDown size={20} />
+                    )}
+                </span>
+            </button>
+
+            {open && (
+                <div className="border-t border-slate-800 px-5 py-4">
+                    <p className="text-sm leading-7 text-slate-400">
+                        This question is generated specifically from your
+                        resume, profile and the selected job description.
+                    </p>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function PreparationCard({ item, index }) {
+    const [open, setOpen] = useState(false);
+
+    const text = String(item || "");
+    const colonIndex = text.indexOf(":");
+
+    const dayTitle =
+        colonIndex !== -1
+            ? text.slice(0, colonIndex)
+            : `Day ${index + 1}`;
+
+    const description =
+        colonIndex !== -1
+            ? text.slice(colonIndex + 1).trim()
+            : text;
+
+    return (
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/60">
+            <button
+                type="button"
+                onClick={() => setOpen((current) => !current)}
+                className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left"
+            >
+                <div className="flex min-w-0 items-center gap-4">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-500/10">
+                        <ClipboardList
+                            size={19}
+                            className="text-purple-400"
+                        />
+                    </div>
+
+                    <div className="min-w-0">
+                        <p className="text-sm font-bold text-white">
+                            {dayTitle}
+                        </p>
+
+                        {!open && (
+                            <p className="mt-1 truncate text-xs text-slate-500">
+                                Click to view preparation details
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                <span className="shrink-0 text-slate-500">
+                    {open ? (
+                        <ChevronUp size={20} />
+                    ) : (
+                        <ChevronDown size={20} />
+                    )}
+                </span>
+            </button>
+
+            {open && (
+                <div className="border-t border-slate-800 px-5 py-5">
+                    <p className="text-sm leading-7 text-slate-400">
+                        {description}
+                    </p>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function EmptyState({ message }) {
+    return (
+        <div className="flex min-h-[260px] items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-950/30 px-6 text-center">
+            <p className="text-sm text-slate-500">{message}</p>
         </div>
     );
 }
 
 export default function AIReport() {
     const { interviewId } = useParams();
+
     const [report, setReport] = useState(null);
     const [loading, setLoading] = useState(true);
     const [downloading, setDownloading] = useState(false);
 
+    const [activeSection, setActiveSection] = useState("technical");
+
     useEffect(() => {
         api.get(`${endpoints.interview}/report/${interviewId}`)
-            .then(({ data }) => setReport(data.report))
-            .catch((error) => toast.error(error.response?.data?.message || "Unable to load report"))
-            .finally(() => setLoading(false));
+            .then(({ data }) => {
+                setReport(data.report);
+            })
+            .catch((error) => {
+                toast.error(
+                    error.response?.data?.message ||
+                        "Unable to load report"
+                );
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }, [interviewId]);
 
     const downloadResume = async () => {
         setDownloading(true);
+
         try {
-            const response = await api.post(`${endpoints.interview}/resume/pdf/${interviewId}`, {}, { responseType: "blob", timeout: 90000 });
+            const response = await api.post(
+                `${endpoints.interview}/resume/pdf/${interviewId}`,
+                {},
+                {
+                    responseType: "blob",
+                    timeout: 90000,
+                }
+            );
+
             const url = URL.createObjectURL(response.data);
+
             const anchor = document.createElement("a");
             anchor.href = url;
-            anchor.download = `jobsync_${report?.jobTitle || "resume"}.pdf`;
+            anchor.download = `jobsync_${
+                report?.jobTitle ||
+                report?.title ||
+                "resume"
+            }.pdf`;
+
             document.body.appendChild(anchor);
             anchor.click();
             anchor.remove();
+
             URL.revokeObjectURL(url);
+
             toast.success("Resume downloaded");
         } catch (error) {
-            toast.error(error.response?.data?.message || "Unable to generate resume PDF");
+            toast.error(
+                error.response?.data?.message ||
+                    "Unable to generate resume PDF"
+            );
         } finally {
             setDownloading(false);
         }
     };
 
-    if (loading) return <Loading label="Loading AI report..." />;
-    if (!report) return <div className="p-16 text-center text-slate-400">Report not found.</div>;
+    const sectionContent = useMemo(() => {
+        if (!report) return null;
+
+        switch (activeSection) {
+            case "technical":
+                return {
+                    title: "Technical Questions",
+                    description:
+                        "Technical questions generated specifically for this role based on your profile and resume.",
+                    items: report.technicalQuestions || [],
+                };
+
+            case "behavioral":
+                return {
+                    title: "Behavioral Questions",
+                    description:
+                        "Behavioral questions designed to help you prepare for the interview and explain your experiences effectively.",
+                    items: report.behavioralQuestions || [],
+                };
+
+            case "preparation":
+                return {
+                    title: "Preparation Plan",
+                    description:
+                        "A personalized interview preparation roadmap based on your identified skill gaps and target role.",
+                    items: report.preparationPlan || [],
+                };
+
+            default:
+                return {
+                    title: "Technical Questions",
+                    description:
+                        "Technical questions generated specifically for this role based on your profile and resume.",
+                    items: report.technicalQuestions || [],
+                };
+        }
+    }, [activeSection, report]);
+
+    if (loading) {
+        return <Loading label="Loading AI report..." />;
+    }
+
+    if (!report) {
+        return (
+            <div className="flex min-h-[70vh] items-center justify-center px-6 text-center">
+                <div>
+                    <p className="text-xl font-semibold text-white">
+                        Report not found
+                    </p>
+
+                    <p className="mt-2 text-sm text-slate-500">
+                        The requested AI match report could not be found.
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    const score = Math.max(
+        0,
+        Math.min(100, Number(report.matchScore) || 0)
+    );
+
+    const scoreMessage =
+        score >= 80
+            ? "Strong match for this role"
+            : score >= 60
+            ? "Good match with some gaps"
+            : score >= 40
+            ? "Moderate match for this role"
+            : "Significant skill gaps identified";
+
+    const skillGaps = report.skillGaps || [];
 
     return (
-        <section className="mx-auto min-h-[75vh] max-w-6xl px-4 py-12 sm:px-6">
-            <div className="flex flex-col gap-5 rounded-3xl border border-slate-800 bg-gradient-to-br from-panel to-purple-950/30 p-7 sm:flex-row sm:items-center sm:justify-between">
-                <div><p className="text-sm uppercase tracking-widest text-purple-400">AI Match Report</p><h1 className="mt-2 text-3xl font-bold text-white">{report.title || report.jobTitle}</h1></div>
-                <div className="flex items-center gap-4"><div className="rounded-2xl bg-emerald-500/10 px-5 py-4 text-center"><Gauge className="mx-auto text-emerald-400" /><p className="mt-1 text-3xl font-black text-emerald-300">{report.matchScore}%</p><p className="text-xs text-slate-400">Match score</p></div><button onClick={downloadResume} disabled={downloading} className="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-5 py-3 font-semibold hover:bg-purple-500 disabled:opacity-50"><Download size={18} /> {downloading ? "Generating..." : "ATS Resume"}</button></div>
+        <section className="mx-auto min-h-[75vh] max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
+            {/* Header */}
+            <div className="mb-6 flex flex-col gap-5 rounded-3xl border border-slate-800 bg-gradient-to-r from-panel via-slate-900 to-purple-950/20 p-6 shadow-xl shadow-black/20 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-400">
+                        AI Match Report
+                    </p>
+
+                    <h1 className="mt-2 truncate text-2xl font-bold text-white sm:text-3xl">
+                        {report.title || report.jobTitle}
+                    </h1>
+
+                    <p className="mt-2 text-sm text-slate-500">
+                        Personalized analysis based on your resume and
+                        the selected job description.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    onClick={downloadResume}
+                    disabled={downloading}
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-purple-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-900/20 transition hover:bg-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                    <Download size={18} />
+
+                    {downloading
+                        ? "Generating..."
+                        : "Download ATS Resume"}
+                </button>
             </div>
 
-            <div className="mt-7 grid gap-6 lg:grid-cols-2">
-                <Section icon={Wrench} title="Skill gaps" items={report.skillGaps} />
-                <Section icon={GraduationCap} title="Preparation plan" items={report.preparationPlan} />
-                <Section icon={ListChecks} title="Technical questions" items={report.technicalQuestions} />
-                <Section icon={MessageSquareText} title="Behavioral questions" items={report.behavioralQuestions} />
+            {/* Main Dashboard */}
+            <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)_280px]">
+                {/* Left Sidebar */}
+                <aside className="h-fit rounded-2xl border border-slate-800 bg-panel p-3 lg:sticky lg:top-6">
+                    <p className="px-3 pb-3 pt-2 text-xs font-semibold uppercase tracking-widest text-slate-500">
+                        Sections
+                    </p>
+
+                    <div className="space-y-1">
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setActiveSection("technical")
+                            }
+                            className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold transition ${
+                                activeSection === "technical"
+                                    ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
+                                    : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                            }`}
+                        >
+                            <ListChecks size={19} />
+                            <span>Technical Questions</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setActiveSection("behavioral")
+                            }
+                            className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold transition ${
+                                activeSection === "behavioral"
+                                    ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
+                                    : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                            }`}
+                        >
+                            <MessageSquareText size={19} />
+                            <span>Behavioral Questions</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setActiveSection("preparation")
+                            }
+                            className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold transition ${
+                                activeSection === "preparation"
+                                    ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
+                                    : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                            }`}
+                        >
+                            <GraduationCap size={19} />
+                            <span>Preparation Plan</span>
+                        </button>
+                    </div>
+                </aside>
+
+                {/* Center Content */}
+                <main className="min-w-0 rounded-2xl border border-slate-800 bg-panel p-5 sm:p-6">
+                    <div className="mb-6 flex flex-col gap-2 border-b border-slate-800 pb-5 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <h2 className="text-xl font-bold text-white">
+                                {sectionContent.title}
+                            </h2>
+
+                            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+                                {sectionContent.description}
+                            </p>
+                        </div>
+
+                        {activeSection !== "preparation" && (
+                            <span className="w-fit rounded-full border border-slate-800 bg-slate-950 px-3 py-1 text-xs font-medium text-slate-500">
+                                {sectionContent.items.length} questions
+                            </span>
+                        )}
+
+                        {activeSection === "preparation" && (
+                            <span className="w-fit rounded-full border border-slate-800 bg-slate-950 px-3 py-1 text-xs font-medium text-slate-500">
+                                {sectionContent.items.length} days
+                            </span>
+                        )}
+                    </div>
+
+                    {sectionContent.items.length === 0 ? (
+                        <EmptyState
+                            message={`No ${sectionContent.title.toLowerCase()} available.`}
+                        />
+                    ) : (
+                        <div className="space-y-3">
+                            {activeSection === "preparation"
+                                ? sectionContent.items.map(
+                                      (item, index) => (
+                                          <PreparationCard
+                                              key={`preparation-${index}`}
+                                              item={item}
+                                              index={index}
+                                          />
+                                      )
+                                  )
+                                : sectionContent.items.map(
+                                      (item, index) => (
+                                          <QuestionCard
+                                              key={`${activeSection}-${index}`}
+                                              question={item}
+                                              index={index}
+                                          />
+                                      )
+                                  )}
+                        </div>
+                    )}
+                </main>
+
+                {/* Right Sidebar */}
+                <aside className="space-y-6">
+                    {/* Match Score */}
+                    <div className="rounded-2xl border border-slate-800 bg-panel p-6">
+                        <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+                            Match Score
+                        </p>
+
+                        <div className="mt-6 flex flex-col items-center">
+                            <div className="relative flex h-40 w-40 items-center justify-center rounded-full">
+                                <div
+                                    className="absolute inset-0 rounded-full"
+                                    style={{
+                                        background: `conic-gradient(#22c55e ${
+                                            score * 3.6
+                                        }deg, #1e293b ${
+                                            score * 3.6
+                                        }deg)`,
+                                    }}
+                                />
+
+                                <div className="absolute inset-[7px] flex flex-col items-center justify-center rounded-full bg-panel">
+                                    <Gauge
+                                        size={20}
+                                        className="mb-1 text-emerald-400"
+                                    />
+
+                                    <span className="text-4xl font-black text-white">
+                                        {score}
+                                        <span className="text-xl">
+                                            %
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <p className="mt-5 text-center text-sm font-semibold text-emerald-400">
+                                {scoreMessage}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Skill Gaps */}
+                    <div className="rounded-2xl border border-slate-800 bg-panel p-6">
+                        <div className="flex items-center gap-2">
+                            <Wrench
+                                size={18}
+                                className="text-purple-400"
+                            />
+
+                            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300">
+                                Skill Gaps
+                            </h3>
+                        </div>
+
+                        {skillGaps.length === 0 ? (
+                            <div className="mt-5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
+                                <p className="text-sm leading-6 text-emerald-400">
+                                    No major skill gaps were identified
+                                    for this role.
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="mt-5 space-y-3">
+                                {skillGaps.map((gap, index) => {
+                                    const tone =
+                                        index % 3 === 0
+                                            ? "border-red-500/20 bg-red-500/10 text-red-300"
+                                            : index % 3 === 1
+                                            ? "border-amber-500/20 bg-amber-500/10 text-amber-300"
+                                            : "border-emerald-500/20 bg-emerald-500/10 text-emerald-300";
+
+                                    return (
+                                        <div
+                                            key={`skill-gap-${index}`}
+                                            className={`rounded-xl border px-4 py-3 text-sm leading-6 ${tone}`}
+                                        >
+                                            {gap}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Report Summary */}
+                    <div className="rounded-2xl border border-slate-800 bg-panel p-6">
+                        <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+                            Report Overview
+                        </p>
+
+                        <div className="mt-4 space-y-3">
+                            <div className="flex items-center justify-between rounded-xl bg-slate-950/50 px-4 py-3">
+                                <span className="text-sm text-slate-500">
+                                    Technical
+                                </span>
+
+                                <span className="text-sm font-bold text-white">
+                                    {
+                                        report.technicalQuestions
+                                            ?.length || 0
+                                    }
+                                </span>
+                            </div>
+
+                            <div className="flex items-center justify-between rounded-xl bg-slate-950/50 px-4 py-3">
+                                <span className="text-sm text-slate-500">
+                                    Behavioral
+                                </span>
+
+                                <span className="text-sm font-bold text-white">
+                                    {
+                                        report.behavioralQuestions
+                                            ?.length || 0
+                                    }
+                                </span>
+                            </div>
+
+                            <div className="flex items-center justify-between rounded-xl bg-slate-950/50 px-4 py-3">
+                                <span className="text-sm text-slate-500">
+                                    Preparation
+                                </span>
+
+                                <span className="text-sm font-bold text-white">
+                                    {
+                                        report.preparationPlan
+                                            ?.length || 0
+                                    }{" "}
+                                    days
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
             </div>
         </section>
     );
