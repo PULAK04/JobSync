@@ -5,8 +5,6 @@ import {
     ListChecks,
     MessageSquareText,
     Wrench,
-    ChevronDown,
-    ChevronUp,
     ClipboardList,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -18,48 +16,22 @@ import api from "../utils/api.js";
 import { endpoints } from "../utils/endpoints.js";
 
 function QuestionCard({ question, index }) {
-    const [open, setOpen] = useState(false);
-
     return (
-        <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 transition-colors hover:border-slate-700">
-            <button
-                type="button"
-                onClick={() => setOpen((current) => !current)}
-                className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left"
-            >
-                <div className="flex min-w-0 items-start gap-4">
-                    <span className="flex h-8 min-w-8 shrink-0 items-center justify-center rounded-lg bg-purple-500/15 text-sm font-bold text-purple-400">
-                        Q{index + 1}
-                    </span>
-
-                    <span className="text-sm font-semibold leading-6 text-slate-200">
-                        {question}
-                    </span>
-                </div>
-
-                <span className="shrink-0 text-slate-500">
-                    {open ? (
-                        <ChevronUp size={20} />
-                    ) : (
-                        <ChevronDown size={20} />
-                    )}
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 px-5 py-5 transition hover:border-slate-700">
+            <div className="flex items-start gap-4">
+                <span className="flex h-8 min-w-8 shrink-0 items-center justify-center rounded-lg bg-purple-500/15 text-sm font-bold text-purple-400">
+                    Q{index + 1}
                 </span>
-            </button>
 
-            {open && (
-                <div className="border-t border-slate-800 px-5 py-4">
-                    <p className="text-sm leading-7 text-slate-400">
-                        {question}
-                    </p>
-                </div>
-            )}
+                <p className="text-sm font-semibold leading-7 text-slate-200">
+                    {question}
+                </p>
+            </div>
         </div>
     );
 }
 
 function PreparationCard({ item, index }) {
-    const [open, setOpen] = useState(false);
-
     const text = String(item || "");
     const colonIndex = text.indexOf(":");
 
@@ -74,49 +46,25 @@ function PreparationCard({ item, index }) {
             : text;
 
     return (
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60">
-            <button
-                type="button"
-                onClick={() => setOpen((current) => !current)}
-                className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left"
-            >
-                <div className="flex min-w-0 items-center gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-500/10">
-                        <ClipboardList
-                            size={19}
-                            className="text-purple-400"
-                        />
-                    </div>
-
-                    <div className="min-w-0">
-                        <p className="text-sm font-bold text-white">
-                            {dayTitle}
-                        </p>
-
-                        {!open && (
-                            <p className="mt-1 truncate text-xs text-slate-500">
-                                Click to view preparation details
-                            </p>
-                        )}
-                    </div>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 px-5 py-5">
+            <div className="flex items-start gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-500/10">
+                    <ClipboardList
+                        size={19}
+                        className="text-purple-400"
+                    />
                 </div>
 
-                <span className="shrink-0 text-slate-500">
-                    {open ? (
-                        <ChevronUp size={20} />
-                    ) : (
-                        <ChevronDown size={20} />
-                    )}
-                </span>
-            </button>
+                <div className="min-w-0">
+                    <h3 className="text-base font-bold text-white">
+                        {dayTitle}
+                    </h3>
 
-            {open && (
-                <div className="border-t border-slate-800 px-5 py-5">
-                    <p className="text-sm leading-7 text-slate-400">
+                    <p className="mt-2 text-sm leading-7 text-slate-400">
                         {description}
                     </p>
                 </div>
-            )}
+            </div>
         </div>
     );
 }
@@ -124,7 +72,9 @@ function PreparationCard({ item, index }) {
 function EmptyState({ message }) {
     return (
         <div className="flex min-h-[260px] items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-950/30 px-6 text-center">
-            <p className="text-sm text-slate-500">{message}</p>
+            <p className="text-sm text-slate-500">
+                {message}
+            </p>
         </div>
     );
 }
@@ -136,10 +86,13 @@ export default function AIReport() {
     const [loading, setLoading] = useState(true);
     const [downloading, setDownloading] = useState(false);
 
-    const [activeSection, setActiveSection] = useState("technical");
+    const [activeSection, setActiveSection] =
+        useState("technical");
 
     useEffect(() => {
-        api.get(`${endpoints.interview}/report/${interviewId}`)
+        api.get(
+            `${endpoints.interview}/report/${interviewId}`
+        )
             .then(({ data }) => {
                 setReport(data.report);
             })
@@ -167,10 +120,15 @@ export default function AIReport() {
                 }
             );
 
-            const url = URL.createObjectURL(response.data);
+            const url = URL.createObjectURL(
+                response.data
+            );
 
-            const anchor = document.createElement("a");
+            const anchor =
+                document.createElement("a");
+
             anchor.href = url;
+
             anchor.download = `jobsync_${
                 report?.jobTitle ||
                 report?.title ||
@@ -202,38 +160,44 @@ export default function AIReport() {
                 return {
                     title: "Technical Questions",
                     description:
-                        "Prepare for the technical concepts and skills required for this role.",
-                    items: report.technicalQuestions || [],
+                        "Technical questions tailored to the selected role.",
+                    items:
+                        report.technicalQuestions || [],
                 };
 
             case "behavioral":
                 return {
                     title: "Behavioral Questions",
                     description:
-                        "Prepare for behavioral and experience-based interview questions.",
-                    items: report.behavioralQuestions || [],
+                        "Behavioral questions to help you prepare for the interview.",
+                    items:
+                        report.behavioralQuestions || [],
                 };
 
             case "preparation":
                 return {
                     title: "Preparation Plan",
                     description:
-                        "Follow this personalized preparation roadmap before your interview.",
-                    items: report.preparationPlan || [],
+                        "A personalized day-wise preparation plan for your interview.",
+                    items:
+                        report.preparationPlan || [],
                 };
 
             default:
                 return {
                     title: "Technical Questions",
                     description:
-                        "Prepare for the technical concepts and skills required for this role.",
-                    items: report.technicalQuestions || [],
+                        "Technical questions tailored to the selected role.",
+                    items:
+                        report.technicalQuestions || [],
                 };
         }
     }, [activeSection, report]);
 
     if (loading) {
-        return <Loading label="Loading AI report..." />;
+        return (
+            <Loading label="Loading AI report..." />
+        );
     }
 
     if (!report) {
@@ -245,7 +209,8 @@ export default function AIReport() {
                     </p>
 
                     <p className="mt-2 text-sm text-slate-500">
-                        The requested AI match report could not be found.
+                        The requested AI match report could
+                        not be found.
                     </p>
                 </div>
             </div>
@@ -254,7 +219,10 @@ export default function AIReport() {
 
     const score = Math.max(
         0,
-        Math.min(100, Number(report.matchScore) || 0)
+        Math.min(
+            100,
+            Number(report.matchScore) || 0
+        )
     );
 
     const scoreMessage =
@@ -270,7 +238,7 @@ export default function AIReport() {
 
     return (
         <section className="mx-auto min-h-[75vh] max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
-            {/* Header */}
+            {/* HEADER */}
             <div className="mb-6 flex flex-col gap-5 rounded-3xl border border-slate-800 bg-gradient-to-r from-panel via-slate-900 to-purple-950/20 p-6 shadow-xl shadow-black/20 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
                     <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-400">
@@ -278,12 +246,13 @@ export default function AIReport() {
                     </p>
 
                     <h1 className="mt-2 truncate text-2xl font-bold text-white sm:text-3xl">
-                        {report.title || report.jobTitle}
+                        {report.title ||
+                            report.jobTitle}
                     </h1>
 
                     <p className="mt-2 text-sm text-slate-500">
-                        Personalized analysis based on your resume and
-                        the selected job description.
+                        Personalized interview preparation based
+                        on your resume and selected job.
                     </p>
                 </div>
 
@@ -301,128 +270,171 @@ export default function AIReport() {
                 </button>
             </div>
 
-            {/* Main Dashboard */}
+            {/* MAIN LAYOUT */}
             <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)_280px]">
-                {/* Left Sidebar */}
+                {/* LEFT SIDEBAR */}
                 <aside className="h-fit rounded-2xl border border-slate-800 bg-panel p-3 lg:sticky lg:top-6">
                     <p className="px-3 pb-3 pt-2 text-xs font-semibold uppercase tracking-widest text-slate-500">
                         Sections
                     </p>
 
                     <div className="space-y-1">
+                        {/* Technical */}
                         <button
                             type="button"
                             onClick={() =>
-                                setActiveSection("technical")
+                                setActiveSection(
+                                    "technical"
+                                )
                             }
                             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold transition ${
-                                activeSection === "technical"
+                                activeSection ===
+                                "technical"
                                     ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
                                     : "text-slate-400 hover:bg-slate-900 hover:text-white"
                             }`}
                         >
                             <ListChecks size={19} />
-                            <span>Technical Questions</span>
+                            <span>
+                                Technical Questions
+                            </span>
                         </button>
 
+                        {/* Behavioral */}
                         <button
                             type="button"
                             onClick={() =>
-                                setActiveSection("behavioral")
+                                setActiveSection(
+                                    "behavioral"
+                                )
                             }
                             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold transition ${
-                                activeSection === "behavioral"
+                                activeSection ===
+                                "behavioral"
                                     ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
                                     : "text-slate-400 hover:bg-slate-900 hover:text-white"
                             }`}
                         >
-                            <MessageSquareText size={19} />
-                            <span>Behavioral Questions</span>
+                            <MessageSquareText
+                                size={19}
+                            />
+
+                            <span>
+                                Behavioral Questions
+                            </span>
                         </button>
 
+                        {/* Preparation */}
                         <button
                             type="button"
                             onClick={() =>
-                                setActiveSection("preparation")
+                                setActiveSection(
+                                    "preparation"
+                                )
                             }
                             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold transition ${
-                                activeSection === "preparation"
+                                activeSection ===
+                                "preparation"
                                     ? "bg-purple-500/10 text-purple-400 ring-1 ring-purple-500/20"
                                     : "text-slate-400 hover:bg-slate-900 hover:text-white"
                             }`}
                         >
-                            <GraduationCap size={19} />
-                            <span>Preparation Plan</span>
+                            <GraduationCap
+                                size={19}
+                            />
+
+                            <span>
+                                Preparation Plan
+                            </span>
                         </button>
                     </div>
                 </aside>
 
-                {/* Main Content */}
+                {/* CENTER CONTENT */}
                 <main className="min-w-0 rounded-2xl border border-slate-800 bg-panel p-5 sm:p-6">
-                    <div className="mb-6 flex flex-col gap-2 border-b border-slate-800 pb-5 sm:flex-row sm:items-end sm:justify-between">
+                    <div className="mb-6 flex flex-col gap-3 border-b border-slate-800 pb-5 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <h2 className="text-xl font-bold text-white">
-                                {sectionContent.title}
+                                {
+                                    sectionContent.title
+                                }
                             </h2>
 
-                            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-                                {sectionContent.description}
+                            <p className="mt-2 text-sm leading-6 text-slate-500">
+                                {
+                                    sectionContent.description
+                                }
                             </p>
                         </div>
 
                         <span className="w-fit rounded-full border border-slate-800 bg-slate-950 px-3 py-1 text-xs font-medium text-slate-500">
-                            {activeSection === "preparation"
+                            {activeSection ===
+                            "preparation"
                                 ? `${sectionContent.items.length} days`
                                 : `${sectionContent.items.length} questions`}
                         </span>
                     </div>
 
-                    {sectionContent.items.length === 0 ? (
+                    {sectionContent.items.length ===
+                    0 ? (
                         <EmptyState
                             message={`No ${sectionContent.title.toLowerCase()} available.`}
                         />
+                    ) : activeSection ===
+                      "preparation" ? (
+                        <div className="space-y-4">
+                            {sectionContent.items.map(
+                                (
+                                    item,
+                                    index
+                                ) => (
+                                    <PreparationCard
+                                        key={`preparation-${index}`}
+                                        item={item}
+                                        index={index}
+                                    />
+                                )
+                            )}
+                        </div>
                     ) : (
                         <div className="space-y-3">
-                            {activeSection === "preparation"
-                                ? sectionContent.items.map(
-                                      (item, index) => (
-                                          <PreparationCard
-                                              key={`preparation-${index}`}
-                                              item={item}
-                                              index={index}
-                                          />
-                                      )
-                                  )
-                                : sectionContent.items.map(
-                                      (item, index) => (
-                                          <QuestionCard
-                                              key={`${activeSection}-${index}`}
-                                              question={item}
-                                              index={index}
-                                          />
-                                      )
-                                  )}
+                            {sectionContent.items.map(
+                                (
+                                    item,
+                                    index
+                                ) => (
+                                    <QuestionCard
+                                        key={`${activeSection}-${index}`}
+                                        question={
+                                            item
+                                        }
+                                        index={index}
+                                    />
+                                )
+                            )}
                         </div>
                     )}
                 </main>
 
-                {/* Right Sidebar */}
+                {/* RIGHT SIDEBAR */}
                 <aside className="space-y-6">
-                    {/* Match Score */}
+                    {/* MATCH SCORE */}
                     <div className="rounded-2xl border border-slate-800 bg-panel p-6">
                         <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
                             Match Score
                         </p>
 
                         <div className="mt-6 flex flex-col items-center">
-                            <div className="relative flex h-40 w-40 items-center justify-center rounded-full">
+                            <div className="relative flex h-40 w-40 items-center justify-center">
                                 <div
                                     className="absolute inset-0 rounded-full"
                                     style={{
                                         background: `conic-gradient(#22c55e ${
-                                            score * 3.6
+                                            score *
+                                            3.6
                                         }deg, #1e293b ${
-                                            score * 3.6
+                                            score *
+                                            3.6
                                         }deg)`,
                                     }}
                                 />
@@ -448,7 +460,7 @@ export default function AIReport() {
                         </div>
                     </div>
 
-                    {/* Skill Gaps */}
+                    {/* SKILL GAPS */}
                     <div className="rounded-2xl border border-slate-800 bg-panel p-6">
                         <div className="flex items-center gap-2">
                             <Wrench
@@ -461,32 +473,45 @@ export default function AIReport() {
                             </h3>
                         </div>
 
-                        {skillGaps.length === 0 ? (
+                        {skillGaps.length ===
+                        0 ? (
                             <div className="mt-5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
                                 <p className="text-sm leading-6 text-emerald-400">
-                                    No major skill gaps were identified
+                                    No major skill gaps
+                                    were identified
                                     for this role.
                                 </p>
                             </div>
                         ) : (
                             <div className="mt-5 space-y-3">
-                                {skillGaps.map((gap, index) => {
-                                    const tone =
-                                        index % 3 === 0
-                                            ? "border-red-500/20 bg-red-500/10 text-red-300"
-                                            : index % 3 === 1
-                                            ? "border-amber-500/20 bg-amber-500/10 text-amber-300"
-                                            : "border-emerald-500/20 bg-emerald-500/10 text-emerald-300";
+                                {skillGaps.map(
+                                    (
+                                        gap,
+                                        index
+                                    ) => {
+                                        const tone =
+                                            index %
+                                                3 ===
+                                            0
+                                                ? "border-red-500/20 bg-red-500/10 text-red-300"
+                                                : index %
+                                                      3 ===
+                                                  1
+                                                ? "border-amber-500/20 bg-amber-500/10 text-amber-300"
+                                                : "border-emerald-500/20 bg-emerald-500/10 text-emerald-300";
 
-                                    return (
-                                        <div
-                                            key={`skill-gap-${index}`}
-                                            className={`rounded-xl border px-4 py-3 text-sm leading-6 ${tone}`}
-                                        >
-                                            {gap}
-                                        </div>
-                                    );
-                                })}
+                                        return (
+                                            <div
+                                                key={`skill-gap-${index}`}
+                                                className={`rounded-xl border px-4 py-3 text-sm leading-6 ${tone}`}
+                                            >
+                                                {
+                                                    gap
+                                                }
+                                            </div>
+                                        );
+                                    }
+                                )}
                             </div>
                         )}
                     </div>
