@@ -250,10 +250,7 @@ export default function AIReport() {
                             report.jobTitle}
                     </h1>
 
-                    <p className="mt-2 text-sm text-slate-500">
-                        Personalized interview preparation based
-                        on your resume and selected job.
-                    </p>
+                   
                 </div>
 
                 <button
