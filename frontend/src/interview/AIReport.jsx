@@ -49,8 +49,7 @@ function QuestionCard({ question, index }) {
             {open && (
                 <div className="border-t border-slate-800 px-5 py-4">
                     <p className="text-sm leading-7 text-slate-400">
-                        This question is generated specifically from your
-                        resume, profile and the selected job description.
+                        {question}
                     </p>
                 </div>
             )}
@@ -203,7 +202,7 @@ export default function AIReport() {
                 return {
                     title: "Technical Questions",
                     description:
-                        "Technical questions generated specifically for this role based on your profile and resume.",
+                        "Prepare for the technical concepts and skills required for this role.",
                     items: report.technicalQuestions || [],
                 };
 
@@ -211,7 +210,7 @@ export default function AIReport() {
                 return {
                     title: "Behavioral Questions",
                     description:
-                        "Behavioral questions designed to help you prepare for the interview and explain your experiences effectively.",
+                        "Prepare for behavioral and experience-based interview questions.",
                     items: report.behavioralQuestions || [],
                 };
 
@@ -219,7 +218,7 @@ export default function AIReport() {
                 return {
                     title: "Preparation Plan",
                     description:
-                        "A personalized interview preparation roadmap based on your identified skill gaps and target role.",
+                        "Follow this personalized preparation roadmap before your interview.",
                     items: report.preparationPlan || [],
                 };
 
@@ -227,7 +226,7 @@ export default function AIReport() {
                 return {
                     title: "Technical Questions",
                     description:
-                        "Technical questions generated specifically for this role based on your profile and resume.",
+                        "Prepare for the technical concepts and skills required for this role.",
                     items: report.technicalQuestions || [],
                 };
         }
@@ -358,7 +357,7 @@ export default function AIReport() {
                     </div>
                 </aside>
 
-                {/* Center Content */}
+                {/* Main Content */}
                 <main className="min-w-0 rounded-2xl border border-slate-800 bg-panel p-5 sm:p-6">
                     <div className="mb-6 flex flex-col gap-2 border-b border-slate-800 pb-5 sm:flex-row sm:items-end sm:justify-between">
                         <div>
@@ -371,17 +370,11 @@ export default function AIReport() {
                             </p>
                         </div>
 
-                        {activeSection !== "preparation" && (
-                            <span className="w-fit rounded-full border border-slate-800 bg-slate-950 px-3 py-1 text-xs font-medium text-slate-500">
-                                {sectionContent.items.length} questions
-                            </span>
-                        )}
-
-                        {activeSection === "preparation" && (
-                            <span className="w-fit rounded-full border border-slate-800 bg-slate-950 px-3 py-1 text-xs font-medium text-slate-500">
-                                {sectionContent.items.length} days
-                            </span>
-                        )}
+                        <span className="w-fit rounded-full border border-slate-800 bg-slate-950 px-3 py-1 text-xs font-medium text-slate-500">
+                            {activeSection === "preparation"
+                                ? `${sectionContent.items.length} days`
+                                : `${sectionContent.items.length} questions`}
+                        </span>
                     </div>
 
                     {sectionContent.items.length === 0 ? (
@@ -496,55 +489,6 @@ export default function AIReport() {
                                 })}
                             </div>
                         )}
-                    </div>
-
-                    {/* Report Summary */}
-                    <div className="rounded-2xl border border-slate-800 bg-panel p-6">
-                        <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-                            Report Overview
-                        </p>
-
-                        <div className="mt-4 space-y-3">
-                            <div className="flex items-center justify-between rounded-xl bg-slate-950/50 px-4 py-3">
-                                <span className="text-sm text-slate-500">
-                                    Technical
-                                </span>
-
-                                <span className="text-sm font-bold text-white">
-                                    {
-                                        report.technicalQuestions
-                                            ?.length || 0
-                                    }
-                                </span>
-                            </div>
-
-                            <div className="flex items-center justify-between rounded-xl bg-slate-950/50 px-4 py-3">
-                                <span className="text-sm text-slate-500">
-                                    Behavioral
-                                </span>
-
-                                <span className="text-sm font-bold text-white">
-                                    {
-                                        report.behavioralQuestions
-                                            ?.length || 0
-                                    }
-                                </span>
-                            </div>
-
-                            <div className="flex items-center justify-between rounded-xl bg-slate-950/50 px-4 py-3">
-                                <span className="text-sm text-slate-500">
-                                    Preparation
-                                </span>
-
-                                <span className="text-sm font-bold text-white">
-                                    {
-                                        report.preparationPlan
-                                            ?.length || 0
-                                    }{" "}
-                                    days
-                                </span>
-                            </div>
-                        </div>
                     </div>
                 </aside>
             </div>
