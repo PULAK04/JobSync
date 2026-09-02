@@ -107,14 +107,68 @@ export default function Profile() {
             </div>
 
             {user.role === "student" && (
-                <div className="mt-8 rounded-3xl border border-slate-800 bg-panel p-6 sm:p-8">
-                    <h2 className="text-xl font-bold text-white">Applied jobs</h2>
-                    <div className="mt-5 overflow-x-auto">
-                        <table className="w-full min-w-[680px] text-left text-sm"><thead className="text-slate-500"><tr><th className="px-4 py-3">Job</th><th className="px-4 py-3">Company</th><th className="px-4 py-3">Applied</th><th className="px-4 py-3">Status</th></tr></thead><tbody>{applications.map((application) => <tr key={application._id} className="border-t border-slate-800"><td className="px-4 py-4 text-white">{application.job?.title}</td><td className="px-4 py-4 text-slate-300">{application.job?.company?.name}</td><td className="px-4 py-4 text-slate-400">{new Date(application.createdAt).toLocaleDateString()}</td><td className="px-4 py-4 capitalize"><span className="rounded-full bg-slate-800 px-3 py-1">{application.status}</span></td></tr>)}</tbody></table>
-                        {!applications.length && <p className="py-8 text-center text-slate-400">No applications yet.</p>}
-                    </div>
-                </div>
+    <div className="mt-8 rounded-3xl border border-slate-800 bg-panel p-6 sm:p-8">
+        <h2 className="text-xl font-bold text-white">Applied jobs</h2>
+
+        <div className="mt-5 overflow-x-auto">
+            <table className="w-full min-w-[680px] text-left text-sm">
+                <thead className="text-slate-500">
+                    <tr>
+                        <th className="px-4 py-3">Job</th>
+                        <th className="px-4 py-3">Company</th>
+                        <th className="px-4 py-3">Applied</th>
+                        <th className="px-4 py-3">Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {applications.map((application) => (
+                        <tr
+                            key={application._id}
+                            className="border-t border-slate-800"
+                        >
+                            <td className="px-4 py-4 text-white">
+                                {application.job?.title}
+                            </td>
+
+                            <td className="px-4 py-4 text-slate-300">
+                                {application.job?.company?.name}
+                            </td>
+
+                            <td className="px-4 py-4 text-slate-400">
+                                {new Date(
+                                    application.createdAt
+                                ).toLocaleDateString()}
+                            </td>
+
+                            <td className="px-4 py-4 capitalize">
+                                <span
+                                    className={`rounded-full px-3 py-1 font-medium ${
+                                        application.status === "pending"
+                                            ? "bg-yellow-500/20 text-yellow-400"
+                                            : application.status === "accepted"
+                                            ? "bg-green-500/20 text-green-400"
+                                            : application.status === "rejected"
+                                            ? "bg-red-500/20 text-red-400"
+                                            : "bg-slate-800 text-slate-300"
+                                    }`}
+                                >
+                                    {application.status}
+                                </span>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            {!applications.length && (
+                <p className="py-8 text-center text-slate-400">
+                    No applications yet.
+                </p>
             )}
+        </div>
+    </div>
+)}
         </section>
     );
 }
